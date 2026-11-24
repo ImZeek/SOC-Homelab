@@ -228,3 +228,10 @@ These measurements establish a baseline before endpoint integration and security
 The migration to Microsoft Hyper-V resulted in a responsive and operational SIEM environment during initial testing.
 
 The virtualization infrastructure is ready to support the planned Active Directory deployment, Windows endpoint monitoring, and subsequent security operations activities.
+
+
+## Recovery Checkpoint Evidence
+
+Hyper-V checkpoints were created at key deployment stages to provide recovery points before subsequent infrastructure changes.
+
+![Hyper-V Checkpoints](Screenshots/hyperv-checkpoints.png)
