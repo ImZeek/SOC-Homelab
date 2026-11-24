@@ -382,3 +382,25 @@ The Wazuh All-in-One platform was successfully deployed on Ubuntu Server using M
 All central services were confirmed operational, and initial resource utilization and Dashboard responsiveness were satisfactory.
 
 The SIEM infrastructure is ready for endpoint integration and subsequent security monitoring activities.
+
+
+
+## Deployment Evidence
+
+### Wazuh Dashboard
+
+Successful access to the Wazuh Dashboard following the All-in-One deployment.
+
+![Wazuh Dashboard](Screenshots/wazuh-dashboard.png)
+
+### Service Validation
+
+Verification of the operational status of Wazuh Manager, Wazuh Indexer, Wazuh Dashboard, and Filebeat.
+
+![Wazuh Services](Screenshots/wazuh-services.png)
+
+### Resource Utilization
+
+Initial resource utilization baseline following the Wazuh deployment, including memory usage, system load, and disk utilization.
+
+![Wazuh Performance](Screenshots/wazuh-performance.png)
