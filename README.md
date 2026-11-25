@@ -1,6 +1,6 @@
 # SOC-Homelab
 
-Hands-on SOC homelab focused on security monitoring, adversary simulation, detection engineering, threat hunting, and incident response using Hyper-V, Wazuh, Active Directory, and Sysmon.
+Hands-on SOC homelab focused on security monitoring, adversary simulation, detection engineering, threat hunting, and incident response using Hyper-V, Wazuh, Active Directory, Sysmon, and Kali Linux.
 
 ## Project Overview
 
@@ -10,7 +10,7 @@ The laboratory is built using Microsoft Hyper-V and Wazuh, with a functional Act
 
 The initial security monitoring baseline has been established through Wazuh agents, Microsoft Sysmon, Windows Advanced Audit Policies, and PowerShell Logging.
 
-The next stage focuses on deploying a dedicated attacker machine and preparing the environment for controlled adversary simulations.
+A dedicated Kali Linux attacker machine has been deployed and validated. The next stage focuses on controlled adversary simulations against authorized lab systems.
 
 ## Project Objectives
 
@@ -43,7 +43,7 @@ The next stage focuses on deploying a dedicated attacker machine and preparing t
 | Windows Advanced Audit Policies | Windows security event generation | Implemented |
 | PowerShell Logging | Command and script execution visibility | Implemented |
 | Windows Defender | Endpoint protection and security telemetry source | Monitoring Configured |
-| Kali Linux | Adversary simulation | Planned |
+| Kali Linux 2026.3 | Adversary simulation | Implemented |
 | MITRE ATT&CK | Adversary technique mapping | Partially Implemented |
 | Custom Wazuh Rules | Detection engineering | Planned |
 
@@ -63,7 +63,7 @@ flowchart TD
     SWITCH --- SIEM["SOC-SIEM<br/>Ubuntu Server + Wazuh<br/>10.10.10.20"]
     SWITCH --- DC["DC01<br/>Windows Server 2022<br/>Active Directory + DNS<br/>Wazuh Agent + Sysmon<br/>10.10.10.10"]
     SWITCH --- CLIENT["CLIENT01<br/>Windows 11 Pro<br/>Domain-Joined Endpoint<br/>Wazuh Agent + Sysmon<br/>10.10.10.30"]
-    SWITCH --- KALI["ATTACKER01 - Planned<br/>Kali Linux<br/>10.10.10.40"]
+    SWITCH --- KALI["ATTACKER01<br/>Kali Linux<br/>10.10.10.40"]
 
     DC -.->|Domain Authentication and DNS| CLIENT
     DC ==>|Security Telemetry| SIEM
@@ -71,11 +71,11 @@ flowchart TD
 
     classDef operational fill:#dcfce7,stroke:#16a34a,color:#14532d
     classDef monitoring fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
-    classDef planned fill:#f1f5f9,stroke:#94a3b8,color:#475569
+    classDef attacker fill:#fee2e2,stroke:#dc2626,color:#991b1b
 
     class DC,CLIENT operational
     class SIEM monitoring
-    class KALI planned
+    class KALI attacker
 ```
 
 ## Virtual Machine Configuration
@@ -85,7 +85,7 @@ flowchart TD
 | SOC-SIEM | Ubuntu Server 24.04.5 LTS | 8 GB | 4 | 100 GB | Operational |
 | DC01 | Windows Server 2022 | 4 GB | 2 | 60 GB | Operational |
 | CLIENT01 | Windows 11 Pro | 4 GB | 2 | 80 GB | Operational |
-| ATTACKER01 | Kali Linux | 4 GB | 2 | 40 GB | Planned |
+| ATTACKER01 | Kali Linux 2026.3 | 4 GB | 2 | 40 GB | Operational |
 
 ## Network Configuration
 
@@ -100,10 +100,13 @@ flowchart TD
 | NetBIOS Name | CORP |
 | Internal DNS Server | 10.10.10.10 |
 | SIEM Server | 10.10.10.20 |
+| Attacker Machine | 10.10.10.40 |
 
 The laboratory currently uses an internal virtual switch with NAT connectivity.
 
-Additional network restrictions and isolation controls will be implemented and validated before adversary simulations are performed.
+Internet connectivity is intentionally retained through NAT to represent a connected enterprise environment.
+
+The lab is not fully isolated. Simulations are restricted to authorized lab systems, using controlled payloads and synthetic data. Real malware execution is outside the scope of this environment. Existing endpoint protections remain enabled.
 
 ## Active Directory Environment
 
@@ -182,7 +185,7 @@ All eight event channels were configured for monitoring on both Windows endpoint
 
 | Telemetry | Event ID | SIEM Alert Visibility |
 |---|---|---|
-| Windows Authentication | 4624 / 4625 | Confirmed |
+| Windows Authentication | 4624 / 4625 | Confirmed through combined query; individual IDs not independently validated |
 | Windows Process Creation | 4688 | Confirmed |
 | Sysmon Process Creation | 1 | Confirmed |
 | PowerShell Script Block Logging | 4104 | Confirmed |
@@ -221,6 +224,70 @@ This exercise demonstrated the importance of contextual alert analysis and disti
 
 Further details are available in the [Sysmon Integration documentation](03-Security-Monitoring/Sysmon-Integration.md).
 
+## Adversary Simulation Environment
+
+A dedicated Kali Linux virtual machine was deployed to support controlled adversary simulations and generate security-relevant activity across the monitored infrastructure.
+
+### Attacker Machine
+
+| Parameter | Configuration |
+|---|---|
+| Virtual Machine | ATTACKER01 |
+| Hostname | attacker01 |
+| Operating System | Kali Linux 2026.3 Rolling |
+| IP Address | 10.10.10.40 |
+| Network | SOC-LAB |
+| Remote Administration | SSH |
+| Status | Operational |
+
+Internal DNS resolution, connectivity to the domain controller and SIEM, workstation-to-attacker connectivity, and SSH administration were validated.
+
+### Available Security Tools
+
+| Tool | Purpose |
+|---|---|
+| Nmap | Network discovery and service enumeration |
+| Wireshark | Network traffic analysis |
+| Tcpdump | Packet capture |
+| Impacket SMBClient | SMB security testing |
+| NetExec | Active Directory security testing |
+| Metasploit Framework | Controlled adversary simulation |
+| Hydra | Authentication security testing |
+| John the Ripper | Password security auditing |
+| Hashcat | Password hash auditing |
+
+Executable availability was confirmed. Individual operational testing will be performed when required by specific simulation scenarios.
+
+Additional security tools will be introduced according to the requirements of future exercises.
+
+Further details are available in the [Kali Linux Deployment documentation](04-Attacker-Machine/01-Kali-Linux-Deployment.md).
+
+### Security Boundaries
+
+The laboratory maintains Internet connectivity to represent a connected enterprise environment and support software updates, security intelligence, and tool installation.
+
+The following security boundaries apply:
+
+- Adversary simulations are restricted to authorized laboratory systems.
+- Real malware execution is outside the scope of this environment.
+- Controlled payloads and synthetic data are used for security exercises.
+- Existing endpoint security protections remain enabled.
+- Laboratory services must not be intentionally exposed to the public Internet.
+- Recovery checkpoints are maintained before simulation activities.
+
+### Recovery Baseline
+
+Recovery checkpoints were established across all four virtual machines before beginning controlled adversary simulations.
+
+| Virtual Machine | Reference Checkpoint |
+|---|---|
+| SOC-SIEM | 03 - Security Monitoring Baseline |
+| DC01 | 03 - Security Monitoring Baseline |
+| CLIENT01 | 02 - Security Monitoring Baseline |
+| ATTACKER01 | 01 - Kali Linux Clean Deployment |
+
+These checkpoints provide a recovery mechanism for restoring the laboratory to its established monitoring and deployment baseline.
+
 ## Detection Engineering Approach
 
 The laboratory follows a baseline-first detection engineering methodology.
@@ -245,7 +312,7 @@ This methodology allows detection improvements to be based on observed adversary
 - [x] Phase 01 - Infrastructure and SIEM Deployment
 - [x] Phase 02 - Active Directory and Endpoint Deployment
 - [x] Phase 03 - Security Monitoring and Telemetry Collection
-- [ ] Phase 04 - Attacker Machine Deployment
+- [x] Phase 04 - Attacker Machine Deployment
 - [ ] Phase 05 - Controlled Adversary Simulations
 - [ ] Phase 06 - Detection Engineering
 - [ ] Phase 07 - Threat Hunting and Incident Investigation
@@ -258,8 +325,8 @@ This methodology allows detection improvements to be based on observed adversary
 | 01 | [Infrastructure and SIEM Deployment](01-Infrastructure/README.md) | Completed |
 | 02 | [Active Directory and Endpoint Deployment](02-Active-Directory/README.md) | Completed |
 | 03 | [Security Monitoring and Telemetry Collection](03-Security-Monitoring/README.md) | Completed |
-| 04 | Attacker Machine Deployment | In Progress |
-| 05 | Controlled Adversary Simulations | Planned |
+| 04 | [Attacker Machine Deployment](04-Attacker-Machine/README.md) | Completed |
+| 05 | Controlled Adversary Simulations | In Progress |
 | 06 | Detection Engineering | Planned |
 | 07 | Threat Hunting and Incident Investigation | Planned |
 | 08 | Incident Response and Playbooks | Planned |
@@ -276,6 +343,9 @@ This methodology allows detection improvements to be based on observed adversary
 - Infrastructure troubleshooting.
 - Resource and performance monitoring.
 - Virtual machine checkpoint management.
+- Kali Linux deployment and SSH administration.
+- Security tool availability validation.
+- Definition of authorized simulation boundaries.
 
 ### Active Directory and Identity Management
 
@@ -331,12 +401,13 @@ This methodology allows detection improvements to be based on observed adversary
 
 ## Project Status
 
-**In Progress - Phase 03 Completed**
+**In Progress - Phase 04 Completed / Phase 05 In Progress**
 
-The initial infrastructure, Wazuh SIEM, Active Directory environment, Windows endpoint deployment, and security monitoring baseline have been successfully established.
+The initial infrastructure, Wazuh SIEM, Active Directory environment, Windows endpoint deployment, security monitoring baseline, and dedicated attacker machine have been successfully established.
 
 The laboratory currently includes:
 
+- Four operational virtual machines.
 - An operational Wazuh SIEM platform.
 - A functional Windows Server 2022 Domain Controller.
 - A simulated corporate identity structure.
@@ -352,10 +423,16 @@ The laboratory currently includes:
 - Eight monitored Windows event channels per endpoint.
 - Validated SIEM visibility for multiple security telemetry sources.
 - An initial documented security alert triage exercise.
+- A dedicated Kali Linux attacker workstation.
+- SSH remote administration.
+- Validated availability of core security testing tools.
+- Recovery checkpoints for all four virtual machines.
 
-The next phase focuses on deploying a dedicated attacker machine and validating laboratory isolation controls.
+The infrastructure deployment and initial security monitoring phases are complete.
 
-Subsequent phases will focus on controlled adversary simulations, custom detection rules, threat hunting, incident investigations, and response procedures.
+The current phase focuses on controlled adversary simulations, starting with authentication-related activity and evaluation of native Wazuh detection coverage.
+
+Subsequent phases will focus on custom detection rules, threat hunting, incident investigations, and response procedures.
 
 ## Disclaimer
 
