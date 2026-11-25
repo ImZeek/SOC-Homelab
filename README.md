@@ -222,7 +222,7 @@ No containment actions or detection rule modifications were required.
 
 This exercise demonstrated the importance of contextual alert analysis and distinguishing potentially suspicious behavior from confirmed malicious activity.
 
-Further details are available in the [Sysmon Integration documentation](03-Security-Monitoring/Sysmon-Integration.md).
+Further details are available in the [Sysmon Integration documentation](03-Security-Monitoring/02-Sysmon-Integration.md).
 
 ## Adversary Simulation Environment
 
